@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef } from '@angular/core';
 import { StudentService } from '../student.service';
 import {FormControl,FormGroup,Validators} from '@angular/forms';
 import { Student } from '../student';
@@ -9,13 +9,30 @@ import { Student } from '../student';
 })
 export class AddStudentComponent implements OnInit {
 
-  constructor(private studentservice:StudentService) { }
+  constructor(private studentservice:StudentService, private element: ElementRef) { }
 
   student : Student=new Student();
   submitted = false;
+  dataTemp : any;
+
+  valFromChild: any;
+  nameVal  = "sarvesh in child";
+
 
   ngOnInit() {
     this.submitted=false;
+
+    this.studentservice.getStudentFromFlask()
+      .subscribe(data => {
+        console.log(data)
+        this.dataTemp = data;
+      }, error => console.log(error));
+
+
+  }
+
+  public sendValFromChild(event : string){
+    this.valFromChild = event;
   }
 
   studentsaveform=new FormGroup({
@@ -36,6 +53,8 @@ export class AddStudentComponent implements OnInit {
   
 
   save() {
+console.log(this.element);
+
     this.studentservice.createStudent(this.student)
       .subscribe(data => console.log(data), error => console.log(error));
     this.student = new Student();
